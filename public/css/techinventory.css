@@ -1,0 +1,11 @@
+/* Ajustes propios de TechInventory sobre AdminLTE */
+.content-header > h1 .fa { margin-right: 6px; color: #3c8dbc; }
+.box-title { font-weight: 600; }
+.ti-user-header { height: auto !important; padding: 18px 10px !important; }
+.ti-user-header .fa { color: #fff; }
+#tablaInventario td { vertical-align: middle; }
+#tablaInventario th { white-space: nowrap; }
+#tablaInventario .btn-xs { margin-right: 2px; }
+.label { font-size: 85%; }
+.modal-body .form-group label { font-weight: 600; }
+.small-box .icon { font-size: 70px; }

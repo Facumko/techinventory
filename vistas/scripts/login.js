@@ -1,21 +1,17 @@
-$("#frmAcceso").on('submit',function(e)
-{
-	e.preventDefault();
-	logina=$("#logina").val();
-	clavea=$("#clavea").val();
+$("#formularioAcceso").on("submit", function (evento) {
+    evento.preventDefault();
+    var login = $("#login").val();
+    var clave = $("#clave").val();
 
-	$.post("../ajax/usuario.php?op=verificar",
-		{"logina":logina,"clavea":clavea},
-		function(data)
-		{
-			if (data!="null") 
-			{
-				$(location).attr("href","escritorio.php");
-			}
-			else
-			{
-				bootbox.alert("Usuario y/o Password incorrectos");
-			}
-		});
-
-})	
+    $.ajax({
+        url: "../controladores/acceso.php?op=verificar",
+        method: "POST",
+        data: { login: login, clave: clave },
+        dataType: "json"
+    }).done(function () {
+        window.location.href = "escritorio.php";
+    }).fail(function (xhr) {
+        var respuesta = xhr.responseJSON || {};
+        bootbox.alert(respuesta.message || "No se pudo iniciar sesión.");
+    });
+});
