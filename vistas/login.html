@@ -13,14 +13,12 @@
    
     <!-- Theme style -->
     <link rel="stylesheet" href="../public/css/AdminLTE.min.css">
-    <!-- iCheck -->
-    <link rel="stylesheet" href="../public/css/blue.css">
 
-    <!-- Fondo con guitarras y estilo del recuadro de acceso -->
+    <!-- Fondo y estilo del recuadro de acceso -->
     <style>
       body.login-page {
         min-height: 100vh;
-        background: #14100d url("../public/img/fondo-login.jpg") center center / cover no-repeat fixed;
+        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%) fixed;
         position: relative;
       }
       /* Velo oscuro sobre la imagen para que el formulario se lea bien */
@@ -89,10 +87,8 @@
           padding-top: 6vh;
         }
         /* En celulares "fixed" se ve mal en algunos navegadores */
-        /* y corremos la imagen para que se vean las guitarras de la izquierda */
         body.login-page {
           background-attachment: scroll;
-          background-position: 24% center;
         }
       }
     </style>
@@ -107,7 +103,7 @@
   <body class="hold-transition login-page">
     <div class="login-box">
       <div class="login-logo">
-        <a href="#"><b>TechInventory</b><small>Control de activos internos</small></a>
+        <a href="#" onclick="return false;" style="cursor: default;"><b>TechInventory</b><small>Control de activos internos</small></a>
       </div><!-- /.login-logo -->
       <div class="login-box-body">
         <p class="login-box-msg">Ingrese sus datos de Acceso</p>
