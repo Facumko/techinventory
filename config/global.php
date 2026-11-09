@@ -14,3 +14,10 @@ define("DB_USERNAME", getenv("TI_DB_USER") ?: "root");
 define("DB_PASSWORD", getenv("TI_DB_PASS") !== false ? getenv("TI_DB_PASS") : "");
 // Codificación de caracteres
 define("DB_ENCODE", "utf8mb4");
+
+// Acceso al sistema (no usa tabla: la base tiene solo las 4 tablas del modelo).
+// La clave se guarda como hash (password_hash). Hash actual = "admin". Para cambiarla:
+//   php -r "echo password_hash('NuevaClave', PASSWORD_DEFAULT);"
+define("ADMIN_LOGIN", "admin");
+define("ADMIN_NOMBRE", "Administrador");
+define("ADMIN_CLAVE_HASH", '$2y$10$lABrHT9z/FnCBVuEFhVr5ewXmtzYyld6CFoRuV/wcS.gweF9GT9Pi');

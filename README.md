@@ -14,7 +14,7 @@ HTML5, CSS3 y JavaScript (jQuery, Bootstrap/AdminLTE, DataTables).
 3. En phpMyAdmin → *Importar* → elegir `db/techinventory.sql` (crea la base `techinventory`, las tablas y datos de prueba).
 4. Abrir <http://localhost/techinventory/>.
 
-**Acceso inicial:** usuario `admin`, contraseña `admin` (cambiarla en producción).
+**Acceso inicial:** usuario `admin`, contraseña `admin`. Se define en `config/global.php` (la clave va como hash, no hay tabla de usuarios); instrucciones para cambiarla en ese archivo.
 
 Los datos de conexión están en `config/global.php` (por defecto `localhost`, puerto **3307**, usuario `root` sin contraseña). Si tu MySQL usa el puerto 3306 u otra clave, cambiá ese archivo o definí las variables de entorno
 `TI_DB_HOST`, `TI_DB_PORT`, `TI_DB_USER`, `TI_DB_PASS` y `TI_DB_NAME`.
@@ -40,7 +40,6 @@ JSON con la forma `{ "success": bool, "message": string, "data": ... }`.
 | `empleados` | Personal | `id_sede` → `sedes` |
 | `activos` | Bienes individuales | `id_sede` → `sedes` (ubicación) |
 | `asignaciones` | Historial entrega/devolución | `id_empleado` → `empleados`, `id_activo` → `activos` (N:M) |
-| `usuarios` | Acceso al sistema (clave con `password_hash`) | — |
 
 Restricciones relevantes: claves foráneas con `ON DELETE RESTRICT`, `UNIQUE` en DNI y número de serie,
 `ENUM` para tipos y estados, y `CHECK` para que la devolución no sea anterior a la entrega.

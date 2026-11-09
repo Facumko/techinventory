@@ -1,17 +1,17 @@
 <?php
-require_once __DIR__ . "/ModeloBase.php";
+require_once __DIR__ . "/../config/global.php";
 
-/** Usuarios que pueden ingresar al sistema (tabla usuarios). */
-class Usuario extends ModeloBase
+/** Usuario que puede ingresar al sistema (definido en config/global.php, sin tabla en la base). */
+class Usuario
 {
-    /** Devuelve el usuario si el login existe, está activo y la clave coincide con su hash. */
+    /** Devuelve los datos del usuario si el login y la clave coinciden con los configurados. */
     public function verificar(string $login, string $clave): ?array
     {
-        $usuario = $this->fila("SELECT id_usuario, nombre, login, clave_hash FROM usuarios WHERE login = ? AND activo = 1", "s", array($login));
-        if (!$usuario || !password_verify($clave, $usuario["clave_hash"])) {
+        $loginValido = hash_equals(ADMIN_LOGIN, $login);
+        $claveValida = password_verify($clave, ADMIN_CLAVE_HASH);
+        if (!$loginValido || !$claveValida) {
             return null;
         }
-        unset($usuario["clave_hash"]);
-        return $usuario;
+        return array("id_usuario" => 1, "nombre" => ADMIN_NOMBRE, "login" => ADMIN_LOGIN);
     }
 }

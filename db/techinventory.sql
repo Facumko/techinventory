@@ -10,7 +10,6 @@ DROP TABLE IF EXISTS `asignaciones`;
 DROP TABLE IF EXISTS `activos`;
 DROP TABLE IF EXISTS `empleados`;
 DROP TABLE IF EXISTS `sedes`;
-DROP TABLE IF EXISTS `usuarios`;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ---------------------------------------------------------------------------
@@ -84,25 +83,9 @@ CREATE TABLE `asignaciones` (
   CONSTRAINT `chk_asignaciones_fechas` CHECK (`fecha_devolucion` IS NULL OR `fecha_devolucion` >= `fecha_entrega`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ---------------------------------------------------------------------------
--- usuarios: acceso al sistema (clave guardada con password_hash de PHP)
--- ---------------------------------------------------------------------------
-CREATE TABLE `usuarios` (
-  `id_usuario` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `nombre`     VARCHAR(80)  NOT NULL,
-  `login`      VARCHAR(40)  NOT NULL,
-  `clave_hash` VARCHAR(255) NOT NULL,
-  `activo`     TINYINT(1)   NOT NULL DEFAULT 1,
-  PRIMARY KEY (`id_usuario`),
-  UNIQUE KEY `uq_usuarios_login` (`login`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 -- ===========================================================================
 -- Datos de prueba
 -- ===========================================================================
-INSERT INTO `usuarios` (`nombre`, `login`, `clave_hash`) VALUES
-('Administrador', 'admin', '$2y$10$lABrHT9z/FnCBVuEFhVr5ewXmtzYyld6CFoRuV/wcS.gweF9GT9Pi');
-
 INSERT INTO `sedes` (`id_sede`, `nombre`, `planta`, `descripcion`) VALUES
 (1, 'Casa Central', 'Planta Alta', 'Oficinas de gerencia, administración y sistemas'),
 (2, 'Casa Central', 'Planta Baja', 'Recepción, depósito de equipos y mesa de ayuda'),
