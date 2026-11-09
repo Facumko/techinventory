@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -107,13 +107,13 @@
       </div><!-- /.login-logo -->
       <div class="login-box-body">
         <p class="login-box-msg">Ingrese sus datos de Acceso</p>
-        <form method="post" id="frmAcceso">
+        <form method="post" id="formularioAcceso">
           <div class="form-group has-feedback">
-            <input type="text" id="logina" name="logina" class="form-control" placeholder="Usuario">
+            <input type="text" id="login" name="login" class="form-control" placeholder="Usuario" autocomplete="username" required>
             <span class="fa fa-user form-control-feedback"></span>
           </div>
           <div class="form-group has-feedback">
-            <input type="password" id="clavea" name="clavea" class="form-control" placeholder="Password">
+            <input type="password" id="clave" name="clave" class="form-control" placeholder="Contraseña" autocomplete="current-password" required>
             <span class="fa fa-key form-control-feedback"></span>
           </div>
           <div class="row">
@@ -126,7 +126,7 @@
         </form>
 
         
-        <a href="#">Olvidé mi password</a><br>
+        
         
 
       </div><!-- /.login-box-body -->

@@ -1,42 +1,22 @@
-<?php 
-require_once"global.php";
+<?php
+require_once __DIR__ . "/global.php";
 
-$conexion = new mysqli(DB_HOST,DB_USERNAME,DB_PASSWORD,DB_NAME,DB_PORT); 
-mysqli_query( $conexion, 'SET NAMES "'.DB_ENCODE.'"');
-
-//si tenemos un posible error en la cadena de conexion lo mostramos
-if (mysqli_connect_errno()) 
+/**
+ * Conexión única a MySQL (mysqli) para toda la aplicación.
+ * Los datos de conexión se definen en config/global.php.
+ */
+class Conexion
 {
-	printf("Falló la conexión a la Base de Datos: %s\n",mysqli_connect_errno());
-	exit();
-}
+    private static ?mysqli $instancia = null;
 
-if (!function_exists('ejecutarConsulta'))
-{
-	function ejecutarConsulta($sql)
-	{
-		global $conexion;
-		$query = $conexion->query($sql);
-		return $query;
-	}
-	function ejecutarConsultaSimpleFila($sql)
-	{
-		global $conexion;
-		$query = $conexion->query($sql);
-		$row = $query->fetch_assoc();
-		return $row;
-	}
-	function ejecutarConsulta_retornarID($sql)
-	{
-		global $conexion;
-		$query = $conexion->query($sql);
-		return $conexion->insert_id;
-	}
-	function limpiarCadena($str)
-	{
-		global $conexion;
-		$str = mysqli_real_escape_string($conexion,trim($str));
-		return htmlspecialchars($str);
-	}
+    public static function obtener(): mysqli
+    {
+        if (self::$instancia === null) {
+            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+            $conexion = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT);
+            $conexion->set_charset(DB_ENCODE);
+            self::$instancia = $conexion;
+        }
+        return self::$instancia;
+    }
 }
-?>

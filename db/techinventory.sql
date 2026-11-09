@@ -1,164 +1,137 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 26-10-2026 a las 17:35:50
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- TechInventory | GlobalTech S.A. | Control de activos e inventario interno
+-- Importar desde phpMyAdmin (pestaña "Importar") o con: mysql -u root < techinventory.sql
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+CREATE DATABASE IF NOT EXISTS `techinventory` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `techinventory`;
 
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS `asignaciones`;
+DROP TABLE IF EXISTS `activos`;
+DROP TABLE IF EXISTS `empleados`;
+DROP TABLE IF EXISTS `sedes`;
+DROP TABLE IF EXISTS `usuarios`;
+SET FOREIGN_KEY_CHECKS = 1;
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Base de datos: `techinventory`
---
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `activo`
---
-
-CREATE TABLE `activo` (
-  `id_activo` int(11) NOT NULL,
-  `marca` varchar(40) NOT NULL,
-  `tipo` varchar(40) NOT NULL,
-  `modelo` varchar(40) DEFAULT NULL,
-  `numero_serie` varchar(100) DEFAULT NULL,
-  `estado` varchar(30) NOT NULL
+-- ---------------------------------------------------------------------------
+-- sedes: catálogo base de lugares físicos
+-- ---------------------------------------------------------------------------
+CREATE TABLE `sedes` (
+  `id_sede`     INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nombre`      VARCHAR(80)  NOT NULL,
+  `planta`      VARCHAR(20)  NOT NULL,
+  `descripcion` TEXT         NOT NULL,
+  `activo`      TINYINT(1)   NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id_sede`),
+  UNIQUE KEY `uq_sedes_nombre_planta` (`nombre`, `planta`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `asignacion`
---
-
-CREATE TABLE `asignacion` (
-  `id_asignacion` int(11) NOT NULL,
-  `id_empleado` int(11) NOT NULL,
-  `id_activo` int(11) NOT NULL,
-  `fecha_entrega` date NOT NULL,
-  `fecha_devolucion` date DEFAULT NULL,
-  `estado_equipo` varchar(100) NOT NULL,
-  `observaciones` text DEFAULT NULL
+-- ---------------------------------------------------------------------------
+-- empleados: personal interno; cada empleado pertenece a una sede
+-- ---------------------------------------------------------------------------
+CREATE TABLE `empleados` (
+  `id_empleado` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nombre`      VARCHAR(40)  NOT NULL,
+  `apellido`    VARCHAR(40)  NOT NULL,
+  `dni`         VARCHAR(8)   NOT NULL,
+  `id_sede`     INT UNSIGNED NOT NULL,
+  `activo`      TINYINT(1)   NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id_empleado`),
+  UNIQUE KEY `uq_empleados_dni` (`dni`),
+  KEY `idx_empleados_sede` (`id_sede`),
+  CONSTRAINT `fk_empleados_sede` FOREIGN KEY (`id_sede`) REFERENCES `sedes` (`id_sede`)
+    ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `empleado`
---
-
-CREATE TABLE `empleado` (
-  `nombre` varchar(40) NOT NULL,
-  `apellido` varchar(40) NOT NULL,
-  `DNI` varchar(8) NOT NULL,
-  `foto` varchar(100) DEFAULT NULL,
-  `id_sede` int(11) NOT NULL,
-  `activo` tinyint(4) NOT NULL DEFAULT 1,
-  `id_empleado` int(11) NOT NULL
+-- ---------------------------------------------------------------------------
+-- activos: bienes individuales; cada activo está ubicado en una sede
+-- ---------------------------------------------------------------------------
+CREATE TABLE `activos` (
+  `id_activo`    INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `marca`        VARCHAR(40)  NOT NULL,
+  `tipo`         ENUM('Notebook','Monitor','Teclado','Mouse','Celular','Licencia','Otro') NOT NULL,
+  `modelo`       VARCHAR(40)  DEFAULT NULL,
+  `numero_serie` VARCHAR(100) DEFAULT NULL,
+  `estado`       ENUM('Nuevo','Bueno','Regular','Requiere reparación') NOT NULL DEFAULT 'Nuevo',
+  `id_sede`      INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_activo`),
+  UNIQUE KEY `uq_activos_numero_serie` (`numero_serie`),
+  KEY `idx_activos_sede` (`id_sede`),
+  CONSTRAINT `fk_activos_sede` FOREIGN KEY (`id_sede`) REFERENCES `sedes` (`id_sede`)
+    ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `sede`
---
-
-CREATE TABLE `sede` (
-  `Id_sede` int(11) NOT NULL,
-  `nombre` varchar(80) NOT NULL,
-  `planta` varchar(20) NOT NULL,
-  `descripcion` text NOT NULL,
-  `activo` tinyint(4) NOT NULL DEFAULT 1
+-- ---------------------------------------------------------------------------
+-- asignaciones: tabla intermedia (empleados N:M activos) con el historial
+-- Una asignación con fecha_devolucion NULL está vigente.
+-- ---------------------------------------------------------------------------
+CREATE TABLE `asignaciones` (
+  `id_asignacion`     INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_empleado`       INT UNSIGNED NOT NULL,
+  `id_activo`         INT UNSIGNED NOT NULL,
+  `fecha_entrega`     DATE         NOT NULL,
+  `fecha_devolucion`  DATE         DEFAULT NULL,
+  `estado_equipo`     ENUM('Nuevo','Bueno','Regular','Requiere reparación') NOT NULL,
+  `estado_devolucion` ENUM('Nuevo','Bueno','Regular','Requiere reparación') DEFAULT NULL,
+  `observaciones`     TEXT         DEFAULT NULL,
+  PRIMARY KEY (`id_asignacion`),
+  KEY `idx_asignaciones_empleado` (`id_empleado`),
+  KEY `idx_asignaciones_activo` (`id_activo`, `fecha_devolucion`),
+  CONSTRAINT `fk_asignaciones_empleado` FOREIGN KEY (`id_empleado`) REFERENCES `empleados` (`id_empleado`)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_asignaciones_activo` FOREIGN KEY (`id_activo`) REFERENCES `activos` (`id_activo`)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `chk_asignaciones_fechas` CHECK (`fecha_devolucion` IS NULL OR `fecha_devolucion` >= `fecha_entrega`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Índices para tablas volcadas
---
+-- ---------------------------------------------------------------------------
+-- usuarios: acceso al sistema (clave guardada con password_hash de PHP)
+-- ---------------------------------------------------------------------------
+CREATE TABLE `usuarios` (
+  `id_usuario` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nombre`     VARCHAR(80)  NOT NULL,
+  `login`      VARCHAR(40)  NOT NULL,
+  `clave_hash` VARCHAR(255) NOT NULL,
+  `activo`     TINYINT(1)   NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id_usuario`),
+  UNIQUE KEY `uq_usuarios_login` (`login`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Indices de la tabla `activo`
---
-ALTER TABLE `activo`
-  ADD PRIMARY KEY (`id_activo`);
+-- ===========================================================================
+-- Datos de prueba
+-- ===========================================================================
+INSERT INTO `usuarios` (`nombre`, `login`, `clave_hash`) VALUES
+('Administrador', 'admin', '$2y$10$lABrHT9z/FnCBVuEFhVr5ewXmtzYyld6CFoRuV/wcS.gweF9GT9Pi');
 
---
--- Indices de la tabla `asignacion`
---
-ALTER TABLE `asignacion`
-  ADD PRIMARY KEY (`id_asignacion`),
-  ADD KEY `id_empleado` (`id_empleado`),
-  ADD KEY `id_activo` (`id_activo`);
+INSERT INTO `sedes` (`id_sede`, `nombre`, `planta`, `descripcion`) VALUES
+(1, 'Casa Central', 'Planta Alta', 'Oficinas de gerencia, administración y sistemas'),
+(2, 'Casa Central', 'Planta Baja', 'Recepción, depósito de equipos y mesa de ayuda'),
+(3, 'Sucursal Centro', 'Piso 1', 'Atención comercial y soporte técnico en el centro de la ciudad');
 
---
--- Indices de la tabla `empleado`
---
-ALTER TABLE `empleado`
-  ADD PRIMARY KEY (`id_empleado`),
-  ADD KEY `id_sede` (`id_sede`);
+INSERT INTO `empleados` (`id_empleado`, `nombre`, `apellido`, `dni`, `id_sede`, `activo`) VALUES
+(1, 'Lucía',   'Fernández', '30123456', 1, 1),
+(2, 'Martín',  'Gómez',     '32456789', 1, 1),
+(3, 'Sofía',   'Ramírez',   '35789012', 2, 1),
+(4, 'Diego',   'Acosta',    '28345678', 3, 1),
+(5, 'Valeria', 'Benítez',   '36901234', 3, 1),
+(6, 'Julián',  'Sosa',      '33567890', 2, 0);
 
---
--- Indices de la tabla `sede`
---
-ALTER TABLE `sede`
-  ADD PRIMARY KEY (`Id_sede`);
+INSERT INTO `activos` (`id_activo`, `marca`, `tipo`, `modelo`, `numero_serie`, `estado`, `id_sede`) VALUES
+(1,  'Dell',      'Notebook', 'Latitude 5440',  'DL5440-0001', 'Bueno',               1),
+(2,  'Dell',      'Notebook', 'Latitude 5440',  'DL5440-0002', 'Bueno',               1),
+(3,  'HP',        'Monitor',  'E24 G5',         'HPE24-1001',  'Bueno',               1),
+(4,  'HP',        'Monitor',  'E24 G5',         'HPE24-1002',  'Regular',             3),
+(5,  'Logitech',  'Teclado',  'K120',           'LGK120-2001', 'Nuevo',               2),
+(6,  'Logitech',  'Mouse',    'M185',           'LGM185-3001', 'Nuevo',               2),
+(7,  'Samsung',   'Celular',  'Galaxy A54',     'SGA54-4001',  'Bueno',               3),
+(8,  'Lenovo',    'Notebook', 'ThinkPad E14',   'LNE14-5001',  'Requiere reparación', 2),
+(9,  'Microsoft', 'Licencia', 'Office 2021',    'MSO21-6001',  'Nuevo',               2),
+(10, 'Lenovo',    'Notebook', 'ThinkPad E14',   'LNE14-5002',  'Nuevo',               3);
 
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `activo`
---
-ALTER TABLE `activo`
-  MODIFY `id_activo` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `asignacion`
---
-ALTER TABLE `asignacion`
-  MODIFY `id_asignacion` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `empleado`
---
-ALTER TABLE `empleado`
-  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `sede`
---
-ALTER TABLE `sede`
-  MODIFY `Id_sede` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `asignacion`
---
-ALTER TABLE `asignacion`
-  ADD CONSTRAINT `asignacion_ibfk_1` FOREIGN KEY (`id_activo`) REFERENCES `activo` (`id_activo`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `asignacion_ibfk_2` FOREIGN KEY (`id_empleado`) REFERENCES `empleado` (`id_empleado`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `empleado`
---
-ALTER TABLE `empleado`
-  ADD CONSTRAINT `empleado_ibfk_1` FOREIGN KEY (`id_sede`) REFERENCES `sede` (`Id_sede`) ON UPDATE CASCADE;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+INSERT INTO `asignaciones` (`id_asignacion`, `id_empleado`, `id_activo`, `fecha_entrega`, `fecha_devolucion`, `estado_equipo`, `estado_devolucion`, `observaciones`) VALUES
+(1, 1, 1, '2026-02-02', NULL,         'Nuevo',   NULL,      'Notebook de uso diario'),
+(2, 1, 3, '2026-02-02', NULL,         'Bueno',   NULL,      NULL),
+(3, 2, 2, '2026-03-10', NULL,         'Bueno',   NULL,      NULL),
+(4, 4, 7, '2026-04-15', NULL,         'Bueno',   NULL,      'Celular corporativo'),
+(5, 6, 8, '2026-01-12', '2026-08-30', 'Bueno',   'Requiere reparación', 'Devuelve el equipo por desvinculación; pantalla dañada'),
+(6, 5, 4, '2026-05-20', '2026-09-18', 'Bueno',   'Regular', 'Devuelto por cambio de monitor');
