@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/ModeloBase.php";
 
-/** Totales para el panel de control. */
+// Totales para el panel de control
 class Resumen extends ModeloBase
 {
     public function obtener(): array

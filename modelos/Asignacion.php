@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/ModeloBase.php";
 
-/** Historial de entregas y devoluciones (tabla asignaciones: empleados N:M activos). */
+// Historial de entregas y devoluciones
 class Asignacion extends ModeloBase
 {
     public function listar(): array
@@ -17,7 +17,7 @@ class Asignacion extends ModeloBase
         return $this->filas($sql);
     }
 
-    /** Registra la entrega de un activo libre a un empleado activo, de forma transaccional. */
+    // Registra la entrega de un activo libre a un empleado activo de forma transaccional
     public function asignar(array $datos): int
     {
         $idEmpleado = $this->idPositivo(isset($datos["id_empleado"]) ? $datos["id_empleado"] : 0, "un empleado");
@@ -51,7 +51,7 @@ class Asignacion extends ModeloBase
         }
     }
 
-    /** Cierra la asignación, guarda en qué estado vuelve el equipo y actualiza el estado físico del activo. */
+    // Cierra la asignación, guarda en qué estado vuelve el equipo y actualiza el estado físico del activo
     public function devolver(array $datos): void
     {
         $idAsignacion = $this->idPositivo(isset($datos["id"]) ? $datos["id"] : 0, "una asignación");

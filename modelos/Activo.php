@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/ModeloBase.php";
 
-/** Bienes de la empresa (tabla activos), ubicados en una sede. */
+// Bienes de la empresa ubicados en una sede
 class Activo extends ModeloBase
 {
     public const TIPOS = array("Notebook", "Monitor", "Teclado", "Mouse", "Celular", "Licencia", "Otro");
@@ -43,7 +43,7 @@ class Activo extends ModeloBase
         return (int)$this->conexion->insert_id;
     }
 
-    /** Solo se elimina un activo que nunca fue asignado; si tiene historial se conserva. */
+    // Solo se elimina un activo que nunca fue asignado, si tiene historial se conserva
     public function eliminar(int $id): void
     {
         $fila = $this->fila("SELECT COUNT(*) AS total FROM asignaciones WHERE id_activo = ?", "i", array($id));

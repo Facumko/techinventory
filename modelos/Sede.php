@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/ModeloBase.php";
 
-/** Lugares físicos de la empresa (tabla sedes). */
+// Lugares físicos de la empresa
 class Sede extends ModeloBase
 {
     public function listar(): array

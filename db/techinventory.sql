@@ -1,6 +1,3 @@
--- TechInventory | GlobalTech S.A. | Control de activos e inventario interno
--- Importar desde phpMyAdmin (pestaña "Importar") o con: mysql -u root < techinventory.sql
-
 CREATE DATABASE IF NOT EXISTS `techinventory` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `techinventory`;
 
@@ -13,9 +10,7 @@ DROP TABLE IF EXISTS `sedes`;
 DROP TABLE IF EXISTS `usuarios`;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ---------------------------------------------------------------------------
--- sedes: catálogo base de lugares físicos
--- ---------------------------------------------------------------------------
+
 CREATE TABLE `sedes` (
   `id_sede`     INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `nombre`      VARCHAR(80)  NOT NULL,
@@ -26,9 +21,7 @@ CREATE TABLE `sedes` (
   UNIQUE KEY `uq_sedes_nombre_planta` (`nombre`, `planta`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ---------------------------------------------------------------------------
--- empleados: personal interno; cada empleado pertenece a una sede
--- ---------------------------------------------------------------------------
+
 CREATE TABLE `empleados` (
   `id_empleado` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `nombre`      VARCHAR(40)  NOT NULL,
@@ -43,9 +36,7 @@ CREATE TABLE `empleados` (
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ---------------------------------------------------------------------------
--- activos: bienes individuales; cada activo está ubicado en una sede
--- ---------------------------------------------------------------------------
+
 CREATE TABLE `activos` (
   `id_activo`    INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `marca`        VARCHAR(40)  NOT NULL,
@@ -61,10 +52,9 @@ CREATE TABLE `activos` (
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ---------------------------------------------------------------------------
 -- asignaciones: tabla intermedia (empleados N:M activos) con el historial
--- Una asignación con fecha_devolucion NULL está vigente.
--- ---------------------------------------------------------------------------
+-- Una asignación con fecha_devolucion NULL está vigente
+
 CREATE TABLE `asignaciones` (
   `id_asignacion`     INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_empleado`       INT UNSIGNED NOT NULL,
@@ -84,9 +74,7 @@ CREATE TABLE `asignaciones` (
   CONSTRAINT `chk_asignaciones_fechas` CHECK (`fecha_devolucion` IS NULL OR `fecha_devolucion` >= `fecha_entrega`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ---------------------------------------------------------------------------
--- usuarios: acceso al sistema (clave guardada con password_hash de PHP)
--- ---------------------------------------------------------------------------
+
 CREATE TABLE `usuarios` (
   `id_usuario` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `nombre`     VARCHAR(80)  NOT NULL,
@@ -97,9 +85,8 @@ CREATE TABLE `usuarios` (
   UNIQUE KEY `uq_usuarios_login` (`login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ===========================================================================
 -- Datos de prueba
--- ===========================================================================
+
 INSERT INTO `usuarios` (`nombre`, `login`, `clave_hash`) VALUES
 ('Administrador', 'admin', '$2y$10$lABrHT9z/FnCBVuEFhVr5ewXmtzYyld6CFoRuV/wcS.gweF9GT9Pi');
 

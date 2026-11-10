@@ -1,10 +1,9 @@
 <?php
 require_once __DIR__ . "/global.php";
 
-/**
- * Conexión única a MySQL (mysqli) para toda la aplicación.
- * Los datos de conexión se definen en config/global.php.
- */
+// Conexión única a MySQL (mysqli) para toda la aplicación
+// Los datos de conexión se definen en config/global.php
+
 class Conexion
 {
     private static ?mysqli $instancia = null;

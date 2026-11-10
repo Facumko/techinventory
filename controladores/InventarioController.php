@@ -4,10 +4,7 @@ require_once __DIR__ . "/../modelos/Empleado.php";
 require_once __DIR__ . "/../modelos/Activo.php";
 require_once __DIR__ . "/../modelos/Asignacion.php";
 
-/**
- * Controlador del inventario: recibe la operación pedida, delega en los modelos
- * y devuelve datos estructurados. No contiene HTML ni SQL.
- */
+// Controlador del inventario: recibe la operación pedida, delega en los modelos y devuelve datos estructurados
 class InventarioController
 {
     private Sede $sedes;
@@ -23,7 +20,7 @@ class InventarioController
         $this->asignaciones = new Asignacion();
     }
 
-    /** Ejecuta una operación y devuelve array("mensaje" => ..., "datos" => ...). */
+    // Ejecuta una operación y devuelve array
     public function ejecutar(string $operacion, string $entidad, array $datos): array
     {
         switch ($operacion) {

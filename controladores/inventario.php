@@ -1,5 +1,5 @@
 <?php
-// Punto de entrada JSON del inventario. Usa solo POST (las lecturas también) para no exponer datos por URL.
+// Punto de entrada JSON del inventario. Usa POST para no exponer datos por URL
 session_start();
 require_once __DIR__ . "/Respuesta.php";
 require_once __DIR__ . "/InventarioController.php";
@@ -10,7 +10,7 @@ if (empty($_SESSION["id_usuario"])) {
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     Respuesta::enviar(false, "Método no permitido.", null, 405);
 }
-// Protección CSRF: el token de la sesión debe viajar en la cabecera.
+// Protección CSRF: el token de la sesión debe viajar en la cabecera
 $tokenRecibido = $_SERVER["HTTP_X_CSRF_TOKEN"] ?? "";
 if (empty($_SESSION["csrf"]) || !hash_equals($_SESSION["csrf"], $tokenRecibido)) {
     Respuesta::enviar(false, "Sesión inválida. Recargá la página.", null, 403);

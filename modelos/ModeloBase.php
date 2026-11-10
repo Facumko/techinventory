@@ -2,7 +2,7 @@
 require_once __DIR__ . "/../config/Conexion.php";
 require_once __DIR__ . "/ReglaNegocioException.php";
 
-/** Base de los modelos: ejecuta consultas preparadas y valida datos comunes. */
+// Base de los modelos: ejecuta consultas y valida datos comunes
 abstract class ModeloBase
 {
     public const ESTADOS_FISICOS = array("Nuevo", "Bueno", "Regular", "Requiere reparación");
@@ -14,7 +14,7 @@ abstract class ModeloBase
         $this->conexion = $conexion ?? Conexion::obtener();
     }
 
-    /** Ejecuta una consulta preparada y devuelve el statement ya ejecutado. */
+    // Ejecuta una consulta y devuelve el statement ejecutado
     protected function ejecutar(string $sql, string $tipos = "", array $valores = array()): mysqli_stmt
     {
         try {
@@ -32,7 +32,7 @@ abstract class ModeloBase
         }
     }
 
-    /** Devuelve todas las filas de un SELECT como arreglos asociativos. */
+    // Devuelve todas las filas de un SELECT
     protected function filas(string $sql, string $tipos = "", array $valores = array()): array
     {
         $sentencia = $this->ejecutar($sql, $tipos, $valores);
@@ -41,14 +41,14 @@ abstract class ModeloBase
         return $filas;
     }
 
-    /** Devuelve la primera fila de un SELECT, o null si no hay resultados. */
+    // Devuelve la primera fila de un SELECT, o null si no hay resultados
     protected function fila(string $sql, string $tipos = "", array $valores = array()): ?array
     {
         $filas = $this->filas($sql, $tipos, $valores);
         return $filas ? $filas[0] : null;
     }
 
-    /** Ejecuta INSERT/UPDATE/DELETE y devuelve la cantidad de filas afectadas. */
+    // Ejecuta INSERT/UPDATE/DELETE y devuelve la cantidad de filas afectadas
     protected function modificar(string $sql, string $tipos = "", array $valores = array()): int
     {
         $sentencia = $this->ejecutar($sql, $tipos, $valores);
@@ -69,7 +69,7 @@ abstract class ModeloBase
         return $valor;
     }
 
-    /** Devuelve el texto recortado, o null si quedó vacío (útil para columnas opcionales y UNIQUE). */
+    // Devuelve el texto recortado, o null si quedó vacío
     protected function textoOpcional(array $datos, string $campo, string $etiqueta, int $maximo): ?string
     {
         $valor = isset($datos[$campo]) ? trim((string)$datos[$campo]) : "";

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/requiere_sesion.php";
 
-// Cada módulo: título, ícono, texto del botón "agregar" (null = sin botón) y encabezados de la tabla.
+// Cada módulo: título, ícono, texto del botón "agregar" (null = sin botón) y encabezados de la tabla
 $modulos = array(
     "sedes" => array("Sedes", "fa-map-marker", "Agregar sede", array("Nombre", "Planta", "Descripción", "Estado")),
     "empleados" => array("Empleados", "fa-users", "Agregar empleado", array("Nombre", "Apellido", "DNI", "Sede", "Activos a cargo", "Estado")),

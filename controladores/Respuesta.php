@@ -1,5 +1,5 @@
 <?php
-/** Formato único de respuesta JSON: { success, message, data }. */
+// Formato JSON: { success, message, data }
 class Respuesta
 {
     public static function enviar(bool $correcto, string $mensaje, $datos = null, int $codigoHttp = 200): void

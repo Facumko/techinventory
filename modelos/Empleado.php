@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/ModeloBase.php";
 
-/** Personal de la empresa (tabla empleados), siempre unido a su sede. */
+// Personal de la empresa siempre unido a su sede
 class Empleado extends ModeloBase
 {
     public function listar(): array
@@ -19,7 +19,7 @@ class Empleado extends ModeloBase
         return $this->filas("SELECT id_empleado AS id, nombre, apellido, dni FROM empleados WHERE activo = 1 ORDER BY apellido, nombre");
     }
 
-    /** Activos que el empleado todavía tiene en su poder (para controlar devoluciones). */
+    // Activos que el empleado tiene, para controlar devoluciones
     public function activosPendientes(int $idEmpleado): array
     {
         $sql = "SELECT x.id_asignacion AS id, a.tipo, a.marca, a.modelo, a.numero_serie, x.fecha_entrega, x.estado_equipo
@@ -49,7 +49,7 @@ class Empleado extends ModeloBase
         return (int)$this->conexion->insert_id;
     }
 
-    /** Un empleado con activos sin devolver no se puede desactivar (caso de desvinculación). */
+    // Un empleado con activos sin devolver no se puede desactivar - caso de desvinculación
     public function cambiarEstado(int $id, int $activo): void
     {
         if ($activo === 0) {

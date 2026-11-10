@@ -2,7 +2,6 @@
     "use strict";
 
     var nombreModulo = window.moduloInventario;
-    // "enuso" es el historial de asignaciones filtrado: solo las que todavía no se devolvieron.
     var entidadServidor = nombreModulo === "enuso" ? "asignaciones" : nombreModulo;
     var urlControlador = "../controladores/inventario.php";
     var tokenCsrf = $('meta[name="csrf-token"]').attr("content");
@@ -55,7 +54,7 @@
         return respuesta.message || mensajePorDefecto;
     }
 
-    /** Todas las llamadas al servidor son POST y llevan el token CSRF en la cabecera. */
+    // Todas las llamadas al servidor son POST y llevan el token CSRF en la cabecera
     function solicitar(operacion, datos) {
         var parametros = $.extend({}, datos, { op: operacion, entidad: entidadServidor });
         return $.ajax({

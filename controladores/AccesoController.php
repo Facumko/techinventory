@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/../modelos/Usuario.php";
 
-/** Inicio y cierre de sesión. */
+// Inicio y cierre de sesión
 class AccesoController
 {
     public function iniciarSesion(string $login, string $clave): ?array
